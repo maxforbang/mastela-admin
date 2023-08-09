@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Property {
+  id                String  @id @default(cuid())
+  name              String
+  slug              String?
+  sanityId          String
+  lodgifyPropertyId Int
+  lodgifyRoomId     Int
+}
+
+model Reservation {
+  id               String   @id @default(cuid())
+  startDate        DateTime
+  endDate          DateTime
+  totalPrice       Decimal
+  channel          String
+  numGuests        Int?
+  createdAt        DateTime
+  lodgifyBookingId String?
+  guestId          String
+  propertyId       String
+}
+
+model Guest {
+  id    String  @id @default(cuid())
+  name  String
+  phone String?
+  email String?
+}
+
+model EntryCode {
+  id    String  @id @default(cuid())
+  name  String
+  propertyId String
+  code String
+  reservationId String?
+  createdAt DateTime @default(now())
+  expiryDate DateTime?
+}
+
