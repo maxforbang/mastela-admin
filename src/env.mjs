@@ -9,6 +9,10 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "test", "production"]),
+    HA_TOKEN_VILLA_AVIATOR: z.string(),
+    HA_TOKEN_VILLA_ENCORE: z.string(),
+    HA_TOKEN_THE_TWINS_VILLA: z.string(),
+    HA_TOKEN_MAYA_SERENITY: z.string(),
   },
 
   /**
@@ -27,6 +31,10 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    HA_TOKEN_VILLA_AVIATOR: process.env.HA_TOKEN_VILLA_AVIATOR,
+    HA_TOKEN_VILLA_ENCORE: process.env.HA_TOKEN_VILLA_ENCORE,
+    HA_TOKEN_THE_TWINS_VILLA: process.env.HA_TOKEN_THE_TWINS_VILLA,
+    HA_TOKEN_MAYA_SERENITY: process.env.HA_TOKEN_MAYA_SERENITY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
