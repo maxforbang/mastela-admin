@@ -1,16 +1,15 @@
 import Head from "next/head";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { Bars3Icon } from "@heroicons/react/20/solid";
 import {
   BellIcon,
   XMarkIcon,
   XMarkIcon as XMarkIconOutline,
 } from "@heroicons/react/24/outline";
 import { api } from "~/utils/api";
-import CodeInputut from "~/components/CodeInput";
 import CodeInput from "~/components/CodeInput";
 import clsx from "clsx";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 // const navigation = [
 //   // { name: "Home", href: "#" },
@@ -22,6 +21,8 @@ import clsx from "clsx";
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentProperty, setCurrentProperty] = useState("villa-encore");
+
+  const { user } = useUser();
 
   return (
     <>
@@ -47,7 +48,7 @@ export default function Home() {
               </button> */}
               <img
                 className="h-8 w-auto"
-                src="/Icon-Transparent.png"
+                src="/Mastela-Logo.png"
                 alt="Your Company"
               />
             </div>
@@ -58,24 +59,16 @@ export default function Home() {
                 </a>
               ))} */}
             </nav>
-            {/* <div className="flex flex-1 items-center justify-end gap-x-8">
-              <button
+            <div className="flex flex-1 items-center justify-end gap-x-8">
+              {/* <button
                 type="button"
                 className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
               >
                 <span className="sr-only">View notifications</span>
                 <BellIcon className="h-6 w-6" aria-hidden="true" />
-              </button>
-              <a href="#" className="-m-1.5 p-1.5">
-                <span className="sr-only">Your profile</span>
-                <img
-                  className="h-8 w-8 rounded-full bg-gray-800"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
-              </a>
-            </div> */}
-            <p>User Code Management</p>
+              </button> */}
+              <UserButton />
+            </div>
           </div>
           <Dialog
             as="div"
@@ -119,61 +112,64 @@ export default function Home() {
             </Dialog.Panel>
           </Dialog>
         </header>
-
-        <main>
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <div className="mt-5">
-              <div className="sm:hidden">
-                <label htmlFor="tabs" className="sr-only">
-                  Select a tab
-                </label>
-                {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
-                <select
-                  id="tabs"
-                  name="tabs"
-                  onChange={(e) =>
-                    setCurrentProperty((state) =>
-                      tabs.find((tab) => tab.name === e.target.value)?.slug ?? state
-                    )
-                  }
-                  className="block w-full rounded-md border-gray-300 text-xl focus:border-indigo-500 focus:ring-indigo-500"
-                  defaultValue={"Villa Encore"}
-                >
-                  {tabs.map((tab) => (
-                    <option key={tab.name}>{tab.name}</option>
-                  ))}
-                </select>
+        {user && user.id === "user_2TvNOuOZG0rZoJNG7eAkKHTC8Xz" ? (
+          <main>
+            <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+              <div className="mt-5">
+                <div className="sm:hidden">
+                  <label htmlFor="tabs" className="sr-only">
+                    Select a tab
+                  </label>
+                  {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
+                  <select
+                    id="tabs"
+                    name="tabs"
+                    onChange={(e) =>
+                      setCurrentProperty(
+                        (state) =>
+                          tabs.find((tab) => tab.name === e.target.value)
+                            ?.slug ?? state
+                      )
+                    }
+                    className="block w-full rounded-md border-gray-300 text-xl focus:border-indigo-500 focus:ring-indigo-500"
+                    defaultValue={"Villa Encore"}
+                  >
+                    {tabs.map((tab) => (
+                      <option key={tab.name}>{tab.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="hidden sm:block">
+                  <nav
+                    className="flex justify-center space-x-4"
+                    aria-label="Tabs"
+                  >
+                    {tabs.map((tab) => (
+                      <div
+                        key={tab.name}
+                        onClick={() => setCurrentProperty(tab.slug)}
+                        className={clsx(
+                          tab.slug === currentProperty
+                            ? "pointer-events-none bg-gray-100 text-gray-700"
+                            : "text-gray-500 hover:text-gray-700",
+                          "cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+                        )}
+                        aria-current={
+                          tab.slug === currentProperty ? "page" : undefined
+                        }
+                      >
+                        {tab.name}
+                      </div>
+                    ))}
+                  </nav>
+                </div>
               </div>
-              <div className="hidden sm:block">
-                <nav
-                  className="flex justify-center space-x-4"
-                  aria-label="Tabs"
-                >
-                  {tabs.map((tab) => (
-                    <div
-                      key={tab.name}
-                      onClick={() => setCurrentProperty(tab.slug)}
-                      className={clsx(
-                        tab.slug === currentProperty
-                          ? "pointer-events-none bg-gray-100 text-gray-700"
-                          : "text-gray-500 hover:text-gray-700",
-                        "cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
-                      )}
-                      aria-current={
-                        tab.slug === currentProperty ? "page" : undefined
-                      }
-                    >
-                      {tab.name}
-                    </div>
-                  ))}
-                </nav>
+              <div className="mt-10">
+                <Table slug={currentProperty} />
               </div>
             </div>
-            <div className="mt-10">
-              <Table slug={currentProperty} />
-            </div>
-          </div>
-        </main>
+          </main>
+        ) : null}
       </>
     </>
   );
@@ -185,7 +181,6 @@ const tabs = [
   { name: "Villa Aviator", slug: "villa-aviator", current: false },
   { name: "Maya Serenity", slug: "maya-serenity", current: true },
 ];
-
 
 function Table({ slug }: { slug: string }) {
   const [inputIsOpen, setInputIsOpen] = useState(false);
@@ -303,7 +298,8 @@ function Table({ slug }: { slug: string }) {
                     type="button"
                     className="inline-flex items-center rounded-md border border-red-500 bg-red-50 px-2.5 py-1.5 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-red-200 disabled:opacity-30 disabled:hover:bg-white"
                   >
-                    {!isLoading && <XMarkIcon className="mr-1 h-5 w-5" />} {isLoading ? "Loading" : "Delete"}
+                    {!isLoading && <XMarkIcon className="mr-1 h-5 w-5" />}{" "}
+                    {isLoading ? "Loading" : "Delete"}
                     <span className="sr-only">, {entryCode.name}</span>
                   </button>
                   {entryCodeIdx !== 0 ? (
