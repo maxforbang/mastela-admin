@@ -13,6 +13,7 @@ export const env = createEnv({
     HA_TOKEN_VILLA_ENCORE: z.string(),
     HA_TOKEN_THE_TWINS_VILLA: z.string(),
     HA_TOKEN_MAYA_SERENITY: z.string(),
+    RESEND_API_KEY: z.string(),
   },
 
   /**
@@ -35,6 +36,7 @@ export const env = createEnv({
     HA_TOKEN_VILLA_ENCORE: process.env.HA_TOKEN_VILLA_ENCORE,
     HA_TOKEN_THE_TWINS_VILLA: process.env.HA_TOKEN_THE_TWINS_VILLA,
     HA_TOKEN_MAYA_SERENITY: process.env.HA_TOKEN_MAYA_SERENITY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
