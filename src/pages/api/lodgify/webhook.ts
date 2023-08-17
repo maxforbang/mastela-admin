@@ -16,7 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     action,
     booking: { property_name = "", property_internal_name = "" } = {},
     guest: { name = "", email = "", phone_number = "" } = {},
-  } = req.body as LodgifyBookingWebhookObject;
+  } = req.body[0] as LodgifyBookingWebhookObject;
 
   const entryCode = generateRandomCode(5);
   const firstName = name.split(" ")[0] ?? "";
