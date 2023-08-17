@@ -54,3 +54,5 @@ type LodgifyBookingWebhookObject = {
   total_transactions: Transaction;
   balance_due: string;
 };
+
+type LodgifyBookingWebhookObjectBody = LodgifyBookingWebhookObject[]

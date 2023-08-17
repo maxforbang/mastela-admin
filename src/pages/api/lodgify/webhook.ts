@@ -12,11 +12,17 @@ const resend = new Resend(env.RESEND_API_KEY);
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const trpcCaller = entryCodeRouter.createCaller({ prisma });
 
+  const webhookObject = req.body as LodgifyBookingWebhookObjectBody
+
+  if (!webhookObject || webhookObject.length === 0) {
+    return res.status(400).json({ message: "Body is empty" });
+  }
+
   const {
     action,
     booking: { property_name = "", property_internal_name = "" } = {},
     guest: { name = "", email = "", phone_number = "" } = {},
-  } = req.body[0] as LodgifyBookingWebhookObject;
+  } = webhookObject[0] ?? {} as LodgifyBookingWebhookObject;
 
   const entryCode = generateRandomCode(5);
   const firstName = name.split(" ")[0] ?? "";
@@ -28,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       code: entryCode,
     });
   } catch (error) {
-    return res.status(400).json(error);
+    res.status(400).json(error);
   }
 
   try {
@@ -44,9 +50,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       text: "",
     });
 
-    return res.status(200).json({
-      message: `Successfully created a code for ${name} for ${property_name}. Go to mlvillas.com to view it.`,
-    });
+    return res
+      .status(200)
+      .json({
+        message: `Successfully created a code for ${name} for ${property_name}. Go to mlvillas.com to view it.`,
+      });
   } catch (error) {
     return res.status(400).json(error);
   }
