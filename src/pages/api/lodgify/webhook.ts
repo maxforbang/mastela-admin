@@ -28,7 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       code: entryCode,
     });
   } catch (error) {
-    res.status(400).json(error);
+    return res.status(400).json(error);
   }
 
   try {
@@ -44,13 +44,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       text: "",
     });
 
-    res
-      .status(200)
-      .json({
-        message: `Successfully created a code for ${name} for ${property_name}. Go to mlvillas.com to view it.`,
-      });
+    return res.status(200).json({
+      message: `Successfully created a code for ${name} for ${property_name}. Go to mlvillas.com to view it.`,
+    });
   } catch (error) {
-    res.status(400).json(error);
+    return res.status(400).json(error);
   }
 }
 
