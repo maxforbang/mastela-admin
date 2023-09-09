@@ -66,8 +66,6 @@ export const entryCodeRouter = createTRPCRouter({
           }
         );
 
-        console.log(response);
-
         if (!response.ok) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",

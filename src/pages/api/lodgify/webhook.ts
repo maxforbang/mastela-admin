@@ -1,4 +1,5 @@
-// import { EntryCode } from "@prisma/client";
+/* eslint-disable @typescript-eslint/non-nullable-type-assertion-style, @typescript-eslint/no-unsafe-call */
+
 import { EmailTemplate } from "~/components/EmailTemplate";
 import { Resend } from "resend";
 import { env } from "~/env.mjs";
@@ -6,15 +7,23 @@ import { generateRandomCode } from "~/utils/functions/generateRandomCode";
 import { entryCodeRouter } from "~/server/api/routers/entryCode";
 import { prisma } from "./../../../server/db";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Logger } from "next-axiom";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const webhookObjectResponse = req.body as LodgifyBookingWebhookObjectBody;
+  const webhookObject = webhookObjectResponse[0] as LodgifyBookingWebhookObject;
+  
   const trpcCaller = entryCodeRouter.createCaller({ prisma });
+  const log = new Logger();
 
-  const webhookObject = req.body as LodgifyBookingWebhookObjectBody
-
-  if (!webhookObject || webhookObject.length === 0) {
+  if (!webhookObject) {
+    log.warn("Received empty webhook body.");
+    await log.flush();
     return res.status(400).json({ message: "Body is empty" });
   }
 
@@ -22,7 +31,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     action,
     booking: { property_name = "", property_internal_name = "" } = {},
     guest: { name = "", email = "", phone_number = "" } = {},
-  } = webhookObject[0] ?? {} as LodgifyBookingWebhookObject;
+  } = webhookObject;
+
+  if (action !== "booking_new_status_booked") {
+    log.warn(
+      "Booking received without Lodgify status booking_new_status_booked",
+      { webhookObject }
+    );
+    await log.flush();
+    return res
+      .status(400)
+      .json({
+        message: "Lodigfy Webhook status unhandled",
+        lodgifyWebhook: webhookObject,
+      });
+  }
 
   const entryCode = generateRandomCode(5);
   const firstName = name.split(" ")[0] ?? "";
@@ -34,7 +57,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       code: entryCode,
     });
   } catch (error) {
-    res.status(400).json(error);
+    log.error("Failed to create code.", { error });
+    await log.flush();
+    return res.status(400).json(error);
   }
 
   try {
@@ -50,14 +75,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       text: "",
     });
 
-    return res
-      .status(200)
-      .json({
-        message: `Successfully created a code for ${name} for ${property_name}. Go to mlvillas.com to view it.`,
-      });
+    return res.status(200).json({
+      message: `Successfully created a code for ${name} for ${property_name}. Go to mlvillas.com to view it.`,
+    });
   } catch (error) {
+    log.error("Failed to send email.", { error });
+    await log.flush();
     return res.status(400).json(error);
   }
-}
+};
 
 export default handler;
