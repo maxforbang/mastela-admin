@@ -112,7 +112,7 @@ export default function Home() {
             </Dialog.Panel>
           </Dialog>
         </header>
-        {user && user.id === "user_2bTNLAvIKDlwMU1oEJKm9uZzdYA" ? (
+        {user && (user.id === "user_2bTNLAvIKDlwMU1oEJKm9uZzdYA" || user.id === "user_2TvNOuOZG0rZoJNG7eAkKHTC8Xz") ? (
           <main>
             <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
               <div className="mt-5">
